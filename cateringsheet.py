@@ -6,7 +6,7 @@ there ARE multiple sauces for one order (might need to ask delpin)
 -napkin/utenstil system
 -special instructions
 """
-
+info_list = []
 
 def magnum_rolls(size, quantity, protein, sauces): 
 	"""
@@ -50,7 +50,7 @@ def magnum_rolls(size, quantity, protein, sauces):
 
 	napkins = total_people * 2
 
-	return [num_magnum, protein, containers, sauces, napkins]
+	info_list.append([f'{num_magnum} magnum rolls', protein, f'{containers} containers', sauces, f'{napkins} napkins'])
 
 def banh_mi(size, quantity, protein, mayo):
 	"""
@@ -73,11 +73,24 @@ def banh_mi(size, quantity, protein, mayo):
 	num_banh = servings * quantity
 	napkins = num_banh * 3
 
-	return [num_banh, protein, mayo, napkins]
+	info_list.append([f'{num_banh} magnum rolls', protein, f'{napkins} napkins'])
 
 
-def flb():
-	pass
+def flb(size, quantity, protein, sauce):
+	servings = 0
+	if size == "small":
+		servings = 3
+	elif size == "medium":
+		servings = 5
+	elif size == "large":
+		servings = 10
+	elif size == "x-large":
+		servings = 20
+	
+	total_people = quantity * servings
+	containers = (total_people * 3) / 24
+	
+	return []
 
 def fried_rice():
 	pass
@@ -87,3 +100,20 @@ def pho():
 
 def egg_rolls():
 	pass
+
+magnum_rolls("small", 5, "beef", "sweet chili")
+magnum_rolls("small", 5, "beef", "sweet chili")
+magnum_rolls("small", 5, "chicken", "sweet chili")
+info_dict = {}
+for info in info_list:
+	if "magnum rolls" in info[0]:
+		if "Magnum Rolls" not in info_dict.keys():
+			info_dict["Magnum Rolls"] = {info[1]:int(info[0].strip(" magnum rolls"))}
+		else:
+			if info[1] in info_dict["Magnum Rolls"].keys():
+				info_dict["Magnum Rolls"][info[1]] += int(info[0].strip(" magnum rolls"))
+			else:
+				info_dict["Magnum Rolls"][info[1]] = int(info[0].strip(" magnum rolls"))
+			
+
+print(info_dict)
