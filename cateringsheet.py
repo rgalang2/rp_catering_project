@@ -1,7 +1,9 @@
+from docx import Document
 """
 things that needed to be accounted for:
 -multiple sauces for one order and how much sauce is needed if
 there ARE multiple sauces for one order (might need to ask delpin)
+update: he dont know but he said he will find out for us
 -how calculating catering boxes will work
 -napkin/utenstil system
 -special instructions
@@ -73,10 +75,12 @@ def banh_mi(size, quantity, protein, mayo):
 	num_banh = servings * quantity
 	napkins = num_banh * 3
 
-	info_list.append([f'{num_banh} magnum rolls', protein, f'{napkins} napkins'])
+	info_list.append([f'{num_banh} banh mi', protein, mayo, f'{napkins} napkins'])
 
 
-def flb(size, quantity, protein, sauce):
+def flb(size, quantity, protein, sauces):
+	tin = 0
+	size_tin = ""
 	servings = 0
 	if size == "small":
 		servings = 3
@@ -88,9 +92,28 @@ def flb(size, quantity, protein, sauce):
 		servings = 20
 	
 	total_people = quantity * servings
-	containers = (total_people * 3) / 24
-	
-	return []
+	sauce_oz = total_people/24
+
+	if sauce_oz <= 24:
+		containers = 1
+	else:
+		containers = int(round(sauce_oz / 24, 0))	
+
+	napkins = total_people * 2
+
+	if total_people < 7:
+		size_tin = "medium tins"
+		tin = total_people//3
+		if total_people%3 > 1:
+			tin += 1
+	else:
+		size_tin = "large tins"
+		tin = total_people // 7
+		if total_people % 7 > 3:
+			tin +=1
+
+
+	info_list.append([f'{tin} tins', size_tin, protein, f'{containers} containers', sauces, f'{napkins} napkins'])
 
 def fried_rice():
 	pass
@@ -101,9 +124,7 @@ def pho():
 def egg_rolls():
 	pass
 
-magnum_rolls("small", 5, "beef", "sweet chili")
-magnum_rolls("small", 5, "beef", "sweet chili")
-magnum_rolls("small", 5, "chicken", "sweet chili")
+flb("large", 8, "chicken", "sweet chili")
 info_dict = {}
 for info in info_list:
 	if "magnum rolls" in info[0]:
@@ -114,6 +135,20 @@ for info in info_list:
 				info_dict["Magnum Rolls"][info[1]] += int(info[0].strip(" magnum rolls"))
 			else:
 				info_dict["Magnum Rolls"][info[1]] = int(info[0].strip(" magnum rolls"))
-			
-
+	elif "banh mi" in info[0]:
+		if "Banh Mi" not in info_dict.keys():
+			info_dict["Banh Mi"] = {f'{info[1]} w/ {info[2]}':int(info[0].strip(" banh mi"))}
+		else:
+			if f'{info[1]} w/ {info[2]}' in info_dict["Banh Mi"].keys():
+				info_dict["Banh Mi"][f'{info[1]} w/ {info[2]}'] += int(info[0].strip(" banh mi"))
+			else:
+				info_dict["Banh Mi"][f'{info[1]} w/ {info[2]}'] = int(info[0].strip(" banh mi"))
+	elif "tins" in info[0]:
+		if "Fully Loaded Bowls" not in info_dict.keys():
+			info_dict["Fully Loaded Bowls"] = {f'{info[2]} in {info[1]}':int(info[0].strip(" tins"))}
+		else:
+			if f'{info[2]} in {info[1]}' in info_dict["Fully Loaded Bowls"].keys():
+				info_dict["Fully Loaded Bowls"][f'{info[2]} in {info[1]}'] += int(info[0].strip(" tins"))
+			else:
+				info_dict["Fully Loaded Bowls"][f'{info[2]} in {info[1]}'] = int(info[0].strip(" tins"))
 print(info_dict)
