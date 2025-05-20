@@ -151,7 +151,14 @@ def egg_rolls():
 """
 FOR KIET
 -this part is user input. i have no idea how to make a gui so good luck ! 
-lmk if you have questions abt the code
+ 
+-right now, i have it so the user keeps giving items until they type in 'x',
+but there is probably a better way for them to input stuff
+
+-i saw you do dropdown menus on your boba website project, that could be
+useful !!! 
+
+lmk if you have questions B)
 """
 
 user_input = input("What item?: ")
