@@ -1,4 +1,5 @@
 from docx import Document
+from docx.enum.style import WD_STYLE
 """
 things that needed to be accounted for:
 -multiple sauces for one order and how much sauce is needed if
@@ -21,38 +22,43 @@ def magnum_rolls(size, quantity, protein, sauces):
 	sauce_oz = 0
 	size_for_one = 0 #how many rolls are in one unit (?? idk a better word)
 	containers = 0
-
+	box_vol = 0
 
 	if size == "small":
 		size_for_one = 9
 		servings = 3
+		box_vol = 9
 
 	elif size == "medium":
 		size_for_one = 15
 		servings = 5
+		box_vol = 15
 
 	elif size == "large":
 		size_for_one = 30
 		servings = 10
+		box_vol = 30
 
 	elif size == "x-large":
 		size_for_one = 60
 		servings = 20
+		box_vol = 60
 
 
 	total_people = servings * quantity
+	box_vol *= quantity
 
 	num_magnum = size_for_one * quantity
 	sauce_oz = total_people * 3
 
-	if sauce_oz <= 24:
+	if sauce_oz <= 24: #if the amount of sauce does not go up to 24, it will just give them one container
 		containers = 1
 	else:
 		containers = int(round(sauce_oz / 24, 0))
+	
+	napkins = total_people * 2 #two (?) napkins per person
 
-	napkins = total_people * 2
-
-	info_list.append([f'{num_magnum} magnum rolls', protein, f'{containers} containers', sauces, f'{napkins} napkins'])
+	info_list.append([f'{num_magnum} magnum rolls', protein, f'{containers} containers', sauces, f'{napkins} napkins', box_vol])
 
 def banh_mi(size, quantity, protein, mayo):
 	"""
@@ -116,15 +122,83 @@ def flb(size, quantity, protein, sauces):
 	info_list.append([f'{tin} tins', size_tin, protein, f'{containers} containers', sauces, f'{napkins} napkins'])
 
 def fried_rice():
+	"""
+	FOR NICO
+	-make a list that contains 
+	[number of tins, the size of each tin, number of utensils, box occupancy]
+	-append it to the list 'info_list'
+	"""
 	pass
 
 def pho():
+	"""
+	FOR NICO
+	-make a list that contains 
+	[number of pho, protein, utensils, box occupancy]
+	-append it to the list 'info_list'
+	"""
 	pass
 
 def egg_rolls():
+	"""
+	FOR NICO
+	-make a list that contains
+	[number of tins, size of each tin, napkins, box occupancy]
+	-append it to the list 'info_list'
+	"""
 	pass
 
-flb("large", 8, "chicken", "sweet chili")
+"""
+FOR KIET
+-this part is user input. i have no idea how to make a gui so good luck ! 
+lmk if you have questions abt the code
+"""
+
+user_input = input("What item?: ")
+while user_input != 'x':
+	if user_input == "magnum rolls":
+		quantity = int(input("Quantity?: "))
+		size = input("What size?: ")
+		protein = input("What protein?: ")
+		sauces = [input('What sauce?: ')]
+		sauce = ''
+
+		while sauce != "no":
+			sauces.append(sauce)
+			sauce = input('Any other sauces?: ')
+	
+		magnum_rolls(size, quantity, protein, sauces)
+		user_input = input("What item?: ")
+
+	if user_input == "banh mi":
+		quantity = int(input("Quantity?: "))
+		size = input("What size?:" )
+		protein = input("What protein?: ")
+		mayo = input("What mayo?: ")
+
+		banh_mi(size, quantity, protein, mayo)
+		user_input = input("What item?: ")
+	
+	if user_input == "flb":
+		quantity = int(input("Quantity?: "))
+		size = input("What size?: ")
+		protein = input("What protein?: ")
+		sauces = [input("What sauce?: ")]
+		sauce = ''
+
+		while sauce != "no":
+			sauces.append(sauce)
+			sauce = input("Any other sauces?: ")
+		
+		flb(size, quantity, protein, sauces)
+		user_input = input("What item?: ")
+		
+
+
+
+
+
+
 info_dict = {}
 for info in info_list:
 	if "magnum rolls" in info[0]:
@@ -152,3 +226,13 @@ for info in info_list:
 			else:
 				info_dict["Fully Loaded Bowls"][f'{info[2]} in {info[1]}'] = int(info[0].strip(" tins"))
 print(info_dict)
+
+document = Document()
+
+document.add_heading("test", 0)
+for items in info_dict:
+	document.add_paragraph(items, style="List Bullet")
+	for a in info_dict.get(items):
+		document.add_paragraph(f'{info_dict[items].get(a)} {a}', style="List Bullet 2")
+document.save("test.docx")
+
