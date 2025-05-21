@@ -1,4 +1,5 @@
 from docx import Document
+from docx.shared import Pt
 """
 things that needed to be accounted for:
 -multiple sauces for one order and how much sauce is needed if
@@ -170,6 +171,18 @@ useful !!!
 
 lmk if you have questions B)
 """
+# name = input("Guest name: ")
+# number = input("Guest's phone number: ")
+# date = input("Date due: ")
+# time = input("Time Due: ")
+# delivery = False
+# address = ""
+# special_instructions = ""
+# if input("Is this a delivery?: ") == "yes":
+# 	delivery = True
+# 	address = input("What is the address?: ")
+# if input("Any special instructions?: ") == "yes":
+# 	special_instructions = input("Special instructions: ")
 
 user_input = input("What item?: ")
 while user_input != 'x':
@@ -177,9 +190,8 @@ while user_input != 'x':
 		quantity = int(input("Quantity?: "))
 		size = input("What size?: ")
 		protein = input("What protein?: ")
-		sauces = [input('What sauce?: ')]
-		sauce = ''
-
+		sauces = []
+		sauce = input('What sauce?: ')
 		while sauce != "no":
 			sauces.append(sauce)
 			sauce = input('Any other sauces?: ')
@@ -212,6 +224,9 @@ while user_input != 'x':
 		
 
 info_dict = {}
+prep_sheet = {}
+sauce_list = {}
+
 for info in info_list:
 	if "magnum rolls" in info[0]:
 		if "Magnum Rolls" not in info_dict.keys():
@@ -221,6 +236,24 @@ for info in info_list:
 				info_dict["Magnum Rolls"][info[1]] += int(info[0].strip(" magnum rolls"))
 			else:
 				info_dict["Magnum Rolls"][info[1]] = int(info[0].strip(" magnum rolls"))
+		for s in info[3]:
+			if sauce not in sauce_list.keys():
+				sauce_list[s] = info[2]
+			else:
+				sauce_list[s] += info[2]
+		if "Napkins" not in prep_sheet.keys():
+			prep_sheet["Napkins"] = info[4]
+		else:
+			prep_sheet["Napkins"] += info[4]
+		if "Catering Boxes" not in prep_sheet.keys():
+			prep_sheet["Catering Boxes"] = info[5]
+		else:
+			prep_sheet["Catering Boxes"] += info[5]
+		if "Ramekins" not in prep_sheet.keys():
+			prep_sheet["Ramekins"] = info[6]
+		else:
+			prep_sheet["Ramekins"] += info[6]
+	
 	elif "banh mi" in info[0]:
 		if "Banh Mi" not in info_dict.keys():
 			info_dict["Banh Mi"] = {f'{info[1]} w/ {info[2]}':int(info[0].strip(" banh mi"))}
@@ -240,12 +273,20 @@ for info in info_list:
 	#fried rice 
 	#pho
 	#egg rolls
+prep_sheet["Catering Boxes"] = round(prep_sheet["Catering Boxes"], -1)//100
+if prep_sheet["Catering Boxes"] == 0:
+	prep_sheet["Catering Boxes"] = 1
 
-print(info_dict)
+print(prep_sheet)
 
 document = Document()
+style = document.styles['Normal']
+font = style.font
+font.name = "Arial"
+font.size = Pt(13)
 d = document.add_paragraph("Guest Name: \nGuest's Phone #: \nDate: \nTime Due: \n")
 d.add_run("Delivery: \nDelivered by: \nAddress: ")
+document.add_paragraph("Special Instructions: ")
 for items in info_dict:
 	thing = document.add_paragraph(items, style="List Bullet")
 	thing.paragraph_format.space_before = 1
@@ -254,5 +295,18 @@ for items in info_dict:
 		protein = document.add_paragraph(f'{info_dict[items].get(a)} {a}', style="List Bullet 2")
 		protein.paragraph_format.space_after = 1
 		protein.paragraph_format.space_before = 1
+preparation = document.add_paragraph("Prep Sheet:")
+preparation.paragraph_format.space_before = Pt(3)
+preparation.paragraph_format.space_after = Pt(1)
+for prep in prep_sheet:
+	thing = document.add_paragraph(f'{prep}: {prep_sheet[prep]}', style= "List Bullet")
+	thing.paragraph_format.space_after = Pt(1)
+	thing.paragraph_format.space_before = Pt(1)
+sauce_prep = document.add_paragraph("Sauces (24oz):")
+sauce_prep.paragraph_format.space_before = Pt(3)
+sauce_prep.paragraph_format.space_after = Pt(1)
+for sasa in sauce_list:
+	fuck = document.add_paragraph(f'{sasa}: {sauce_list[sasa]}', style="List Bullet")
+	fuck.paragraph_format.space_before = Pt(1)
+	fuck.paragraph_format.space_after = Pt(1)
 document.save("test.docx")
-
