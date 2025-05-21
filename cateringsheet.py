@@ -1,5 +1,6 @@
 from docx import Document
 from docx.enum.style import WD_STYLE
+from docx.shared import Pt
 """
 things that needed to be accounted for:
 -multiple sauces for one order and how much sauce is needed if
@@ -201,11 +202,6 @@ while user_input != 'x':
 		user_input = input("What item?: ")
 		
 
-
-
-
-
-
 info_dict = {}
 for info in info_list:
 	if "magnum rolls" in info[0]:
@@ -232,14 +228,22 @@ for info in info_list:
 				info_dict["Fully Loaded Bowls"][f'{info[2]} in {info[1]}'] += int(info[0].strip(" tins"))
 			else:
 				info_dict["Fully Loaded Bowls"][f'{info[2]} in {info[1]}'] = int(info[0].strip(" tins"))
+	#fried rice 
+	#pho
+	#egg rolls
+
 print(info_dict)
 
 document = Document()
-
-document.add_heading("test", 0)
+d = document.add_paragraph("Guest Name: \nGuest's Phone #: \nDate: \nTime Due: \n")
+d.add_run("Delivery: \nDelivered by: \nAddress: ")
 for items in info_dict:
-	document.add_paragraph(items, style="List Bullet")
+	thing = document.add_paragraph(items, style="List Bullet")
+	thing.paragraph_format.space_before = 1
+	thing.paragraph_format.space_after = 1
 	for a in info_dict.get(items):
-		document.add_paragraph(f'{info_dict[items].get(a)} {a}', style="List Bullet 2")
+		protein = document.add_paragraph(f'{info_dict[items].get(a)} {a}', style="List Bullet 2")
+		protein.paragraph_format.space_after = 1
+		protein.paragraph_format.space_before = 1
 document.save("test.docx")
 
