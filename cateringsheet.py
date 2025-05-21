@@ -1,14 +1,19 @@
 from docx import Document
-from docx.enum.style import WD_STYLE
-from docx.shared import Pt
 """
 things that needed to be accounted for:
 -multiple sauces for one order and how much sauce is needed if
 there ARE multiple sauces for one order (might need to ask delpin)
 update: he dont know but he said he will find out for us
--how calculating catering boxes will work
--napkin/utenstil system
 -special instructions
+
+notes:
+-box occupancy, or box_vol, is how much space the item will take up
+in one catering box. it is represented as a whole number, but
+it'll be like a percentage.
+i think three magnum rolls would take up 3% of the box, so i set
+box_vol = 3. it'll be summed up at the end then divided by 100
+to determine the number of catering boxes.
+-i think as of right now, napkins will be 2 per person. could change, idk
 """
 info_list = []
 
@@ -58,8 +63,9 @@ def magnum_rolls(size, quantity, protein, sauces):
 		containers = int(round(sauce_oz / 24, 0))
 	
 	napkins = total_people * 2 #two (?) napkins per person
+	ramekins = containers * 12
 
-	info_list.append([f'{num_magnum} magnum rolls', protein, f'{containers} containers', sauces, f'{napkins} napkins', box_vol])
+	info_list.append([f'{num_magnum} magnum rolls', protein, containers, sauces, napkins, box_vol, ramekins])
 
 def banh_mi(size, quantity, protein, mayo):
 	"""
@@ -82,7 +88,7 @@ def banh_mi(size, quantity, protein, mayo):
 	num_banh = servings * quantity
 	napkins = num_banh * 3
 
-	info_list.append([f'{num_banh} banh mi', protein, mayo, f'{napkins} napkins'])
+	info_list.append([f'{num_banh} banh mi', protein, mayo, napkins])
 
 
 def flb(size, quantity, protein, sauces):
@@ -99,6 +105,7 @@ def flb(size, quantity, protein, sauces):
 		servings = 20
 	
 	total_people = quantity * servings
+	utensils = total_people
 	sauce_oz = total_people/24
 
 	if sauce_oz <= 24:
@@ -107,6 +114,8 @@ def flb(size, quantity, protein, sauces):
 		containers = int(round(sauce_oz / 24, 0))	
 
 	napkins = total_people * 2
+
+	ramekins = containers * 12
 
 	if total_people < 7:
 		size_tin = "medium tins"
@@ -120,18 +129,18 @@ def flb(size, quantity, protein, sauces):
 			tin +=1
 
 
-	info_list.append([f'{tin} tins', size_tin, protein, f'{containers} containers', sauces, f'{napkins} napkins'])
+	info_list.append([f'{tin} tins', size_tin, protein, containers, sauces, utensils, napkins, ramekins])
 
-def fried_rice():
+def fried_rice(size, quantity):
 	"""
 	FOR NICO
 	-make a list that contains 
-	[number of tins, the size of each tin, number of utensils, box occupancy]
+	[number of tins, the size of each tin, number of pairs of utensils, box occupancy]
 	-append it to the list 'info_list'
 	"""
 	pass
 
-def pho():
+def pho(size, quantity, pho_type, pairs_of_utensils):
 	"""
 	FOR NICO
 	-make a list that contains 
@@ -140,7 +149,7 @@ def pho():
 	"""
 	pass
 
-def egg_rolls():
+def egg_rolls(size, quantity, type_of_ER):
 	"""
 	FOR NICO
 	-make a list that contains
