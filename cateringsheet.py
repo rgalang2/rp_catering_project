@@ -67,7 +67,10 @@ def magnum_rolls(size, quantity, protein, sauces):
 	
 	containers *= len(sauces)
 	
-	napkins = total_people * 3 
+	#i want napkins to be a multiple of 10. kinda personal preference because who wants to count exactly 76 napkins
+	napkins = total_people * 3
+	while napkins % 10 != 0:
+		napkins +=1 
 	ramekins = (containers * 12) * len(sauces)
 
 	info_list.append([f'{num_magnum} magnum rolls', protein, containers, sauces, napkins, box_vol, ramekins, total_people])
@@ -92,12 +95,17 @@ def banh_mi(size, quantity, protein, mayo):
 
 	num_banh = servings * quantity
 	total_people = servings * quantity
+
+	#i want napkins to be a multiple of 10. kinda personal preference because who wants to count exactly 76 napkins
 	napkins = total_people * 3
+	while napkins % 10 != 0:
+		napkins +=1
 
 	info_list.append([f'{num_banh} banh mi', protein, mayo, napkins, total_people])
 
 
 def flb(size, quantity, protein, sauces):
+	box_vol = 1
 	tin = 0
 	size_tin = ""
 	servings = 0
@@ -113,15 +121,20 @@ def flb(size, quantity, protein, sauces):
 	total_people = quantity * servings
 	sauce_oz = (total_people*3) /24
 
+	#if the amount of sauce does not go up to 24, it will just give them one container
 	if sauce_oz <= 24:
 		containers = 1
 	else:
 		containers = int(round(sauce_oz, 0))	
 
-	containers *= len(sauces)
+	#i want napkins to be a multiple of 10. kinda personal preference because who wants to count exactly 76 napkins
 	napkins = total_people * 3
-
-	ramekins = containers * 12
+	while napkins % 10 != 0:
+		napkins +=1
+	#same thing with ramekins
+	ramekins = (containers * 12) * len(sauces)
+	while ramekins % 10 != 0:
+		ramekins += 1
 
 	if total_people < 7:
 		size_tin = "medium tins"
@@ -133,9 +146,10 @@ def flb(size, quantity, protein, sauces):
 		tin = total_people // 7
 		if total_people % 7 >= 2:
 			tin +=1
+	
+	box_vol = 50*tin
 
-
-	info_list.append([f'{tin} tins', size_tin, protein, containers, sauces, napkins, ramekins, total_people])
+	info_list.append([f'{tin} tins', size_tin, protein, containers, sauces, napkins, ramekins, total_people, box_vol])
 
 def fried_rice(size, quantity):
 	"""
@@ -176,7 +190,7 @@ useful !!!
 
 lmk if you have questions B)
 """
-# name = input("Guest name: ")
+name = input("Guest name: ")
 # number = input("Guest's phone number: ")
 # date = input("Date due: ")
 # time = input("Time Due: ")
@@ -260,8 +274,12 @@ for info in info_list:
 			prep_sheet["Ramekins"] += info[6]
 		if "Plates" not in prep_sheet.keys():
 			prep_sheet["Plates"] = info[7]
+			while prep_sheet["Plates"] % 5 != 0:
+				prep_sheet["Plates"] += 1
 		else:
 			prep_sheet["Plates"] += info[7]
+			while prep_sheet["Plates"] % 5 != 0:
+				prep_sheet["Plates"] += 1
 	
 	elif "banh mi" in info[0]:
 		if "Banh Mi" not in info_dict.keys():
@@ -304,9 +322,39 @@ for info in info_list:
 			prep_sheet["Ramekins"] = info[6]
 		else:
 			prep_sheet["Ramekins"] += info[6]
+		if "large tins" in info[1]:
+			if "Large Catering Tins + Lids" not in prep_sheet.keys():
+				prep_sheet["Large Catering Tins + Lids"] = int(info[0].strip(" tins"))
+			else:
+				prep_sheet["Large Catering Tins + Lids"] += int(info[0].strip(" tins"))
+		if "medium tins" in info[1]:
+			if "Medium Catering Tins + Lids" not in prep_sheet.keys():
+				prep_sheet["Medium Catering Tins + Lids"] = int(info[0].strip(" tins"))
+			else:
+				prep_sheet["Medium Catering Tins + Lids"] += int(info[0].strip(" tins"))
+		if "Catering Boxes" not in prep_sheet.keys():
+			prep_sheet["Catering Boxes"] = info[8]
+		else:
+			prep_sheet["Catering Boxes"] += info[8]
+		if "Forks" not in prep_sheet.keys():
+			prep_sheet["Forks"] = info[7]
+		else:
+			prep_sheet["Forks"] += info[7]
+		if "Spoons" not in prep_sheet.keys():
+			prep_sheet["Spoons"] = info[7]
+		else:
+			prep_sheet["Spoons"] += info[7]
 	#fried rice 
 	#pho
 	#egg rolls
+#making plates and utensils a multiple of 10
+while prep_sheet["Plates"] % 10 != 0:
+	prep_sheet["Plates"] += 1
+if "Forks" in prep_sheet.keys(): 
+	while prep_sheet["Forks"] % 10 != 0 and prep_sheet["Spoons"] % 10 != 0:
+		prep_sheet["Forks"] +=1
+		prep_sheet["Spoons"] +=1
+
 prep_sheet["Catering Boxes"] = round(prep_sheet["Catering Boxes"], -1)//100
 if prep_sheet["Catering Boxes"] == 0:
 	prep_sheet["Catering Boxes"] = 1
@@ -347,4 +395,4 @@ for sasa in sauce_list:
 	fuck = document.add_paragraph(f'{sasa}: {sauce_list[sasa]}', style="List Bullet")
 	fuck.paragraph_format.space_before = Pt(1)
 	fuck.paragraph_format.space_after = Pt(1)
-document.save("test.docx")
+document.save(f'{name}.docx')
