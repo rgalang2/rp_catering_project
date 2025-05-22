@@ -71,7 +71,10 @@ def magnum_rolls(size, quantity, protein, sauces):
 	napkins = total_people * 3
 	while napkins % 10 != 0:
 		napkins +=1 
+	#same thing with ramekins
 	ramekins = (containers * 12) * len(sauces)
+	while ramekins % 10 != 0:
+		ramekins += 1
 
 	info_list.append([f'{num_magnum} magnum rolls', protein, containers, sauces, napkins, box_vol, ramekins, total_people])
 
