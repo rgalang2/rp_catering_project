@@ -5,6 +5,8 @@ things that needed to be accounted for:
 -multiple sauces for one order and how much sauce is needed if
 there ARE multiple sauces for one order (might need to ask delpin)
 update: he dont know but he said he will find out for us
+-calculating large/medium tins
+-catering box space for each item
 -special instructions
 
 notes:
@@ -14,7 +16,7 @@ it'll be like a percentage.
 i think three magnum rolls would take up 3% of the box, so i set
 box_vol = 3. it'll be summed up at the end then divided by 100
 to determine the number of catering boxes.
--i think as of right now, napkins will be 2 per person. could change, idk
+-i think as of right now, napkins will be 3 per person. could change, idk
 """
 info_list = []
 
@@ -63,10 +65,12 @@ def magnum_rolls(size, quantity, protein, sauces):
 	else:
 		containers = int(round(sauce_oz / 24, 0))
 	
-	napkins = total_people * 2 #two (?) napkins per person
-	ramekins = containers * 12
+	containers *= len(sauces)
+	
+	napkins = total_people * 3 
+	ramekins = (containers * 12) * len(sauces)
 
-	info_list.append([f'{num_magnum} magnum rolls', protein, containers, sauces, napkins, box_vol, ramekins])
+	info_list.append([f'{num_magnum} magnum rolls', protein, containers, sauces, napkins, box_vol, ramekins, total_people])
 
 def banh_mi(size, quantity, protein, mayo):
 	"""
@@ -87,9 +91,10 @@ def banh_mi(size, quantity, protein, mayo):
 
 
 	num_banh = servings * quantity
-	napkins = num_banh * 3
+	total_people = servings * quantity
+	napkins = total_people * 3
 
-	info_list.append([f'{num_banh} banh mi', protein, mayo, napkins])
+	info_list.append([f'{num_banh} banh mi', protein, mayo, napkins, total_people])
 
 
 def flb(size, quantity, protein, sauces):
@@ -106,15 +111,15 @@ def flb(size, quantity, protein, sauces):
 		servings = 20
 	
 	total_people = quantity * servings
-	utensils = total_people
-	sauce_oz = total_people/24
+	sauce_oz = (total_people*3) /24
 
 	if sauce_oz <= 24:
 		containers = 1
 	else:
-		containers = int(round(sauce_oz / 24, 0))	
+		containers = int(round(sauce_oz, 0))	
 
-	napkins = total_people * 2
+	containers *= len(sauces)
+	napkins = total_people * 3
 
 	ramekins = containers * 12
 
@@ -126,17 +131,17 @@ def flb(size, quantity, protein, sauces):
 	else:
 		size_tin = "large tins"
 		tin = total_people // 7
-		if total_people % 7 > 3:
+		if total_people % 7 >= 2:
 			tin +=1
 
 
-	info_list.append([f'{tin} tins', size_tin, protein, containers, sauces, utensils, napkins, ramekins])
+	info_list.append([f'{tin} tins', size_tin, protein, containers, sauces, napkins, ramekins, total_people])
 
 def fried_rice(size, quantity):
 	"""
 	FOR NICO
 	-make a list that contains 
-	[number of tins, the size of each tin, number of pairs of utensils, box occupancy]
+	[number of tins, the size of each tin, number of pairs of utensils, box occupancy, total people]
 	-append it to the list 'info_list'
 	"""
 	pass
@@ -145,7 +150,7 @@ def pho(size, quantity, pho_type, pairs_of_utensils):
 	"""
 	FOR NICO
 	-make a list that contains 
-	[number of pho, protein, utensils, box occupancy]
+	[number of pho, protein, utensils, box occupancy, total people]
 	-append it to the list 'info_list'
 	"""
 	pass
@@ -154,7 +159,7 @@ def egg_rolls(size, quantity, type_of_ER):
 	"""
 	FOR NICO
 	-make a list that contains
-	[number of tins, size of each tin, napkins, box occupancy]
+	[number of tins, size of each tin, napkins, box occupancy, total people]
 	-append it to the list 'info_list'
 	"""
 	pass
@@ -212,8 +217,8 @@ while user_input != 'x':
 		quantity = int(input("Quantity?: "))
 		size = input("What size?: ")
 		protein = input("What protein?: ")
-		sauces = [input("What sauce?: ")]
-		sauce = ''
+		sauces = []
+		sauce = input("What sauce?: ")
 
 		while sauce != "no":
 			sauces.append(sauce)
@@ -253,6 +258,10 @@ for info in info_list:
 			prep_sheet["Ramekins"] = info[6]
 		else:
 			prep_sheet["Ramekins"] += info[6]
+		if "Plates" not in prep_sheet.keys():
+			prep_sheet["Plates"] = info[7]
+		else:
+			prep_sheet["Plates"] += info[7]
 	
 	elif "banh mi" in info[0]:
 		if "Banh Mi" not in info_dict.keys():
@@ -262,6 +271,14 @@ for info in info_list:
 				info_dict["Banh Mi"][f'{info[1]} w/ {info[2]}'] += int(info[0].strip(" banh mi"))
 			else:
 				info_dict["Banh Mi"][f'{info[1]} w/ {info[2]}'] = int(info[0].strip(" banh mi"))
+		if "Napkins" not in prep_sheet.keys():
+			prep_sheet["Napkins"] = info[3]
+		else:
+			prep_sheet["Napkins"] = info[3]
+		if "Plates" not in prep_sheet.keys():
+			prep_sheet["Plates"] = info[4]
+		else:
+			prep_sheet["Plates"] += info[4]
 	elif "tins" in info[0]:
 		if "Fully Loaded Bowls" not in info_dict.keys():
 			info_dict["Fully Loaded Bowls"] = {f'{info[2]} in {info[1]}':int(info[0].strip(" tins"))}
@@ -270,6 +287,23 @@ for info in info_list:
 				info_dict["Fully Loaded Bowls"][f'{info[2]} in {info[1]}'] += int(info[0].strip(" tins"))
 			else:
 				info_dict["Fully Loaded Bowls"][f'{info[2]} in {info[1]}'] = int(info[0].strip(" tins"))
+		for s in info[4]:
+			if s in sauce_list.keys():
+				sauce_list[s] += info[3]
+			else:
+				sauce_list[s] = info[3]
+		if "Napkins" not in prep_sheet.keys():
+			prep_sheet["Napkins"] = info[5]
+		else:
+			prep_sheet["Napkins"] += info[5]
+		if "Plates" not in prep_sheet.keys():
+			prep_sheet["Plates"] = info[7]
+		else:
+			prep_sheet["Plates"] += info[7]
+		if "Ramekins" not in prep_sheet.keys():
+			prep_sheet["Ramekins"] = info[6]
+		else:
+			prep_sheet["Ramekins"] += info[6]
 	#fried rice 
 	#pho
 	#egg rolls
@@ -277,8 +311,12 @@ prep_sheet["Catering Boxes"] = round(prep_sheet["Catering Boxes"], -1)//100
 if prep_sheet["Catering Boxes"] == 0:
 	prep_sheet["Catering Boxes"] = 1
 
+print(info_list)
+print(info_dict)
 print(prep_sheet)
+print(sauce_list)
 
+#constructs the word doc
 document = Document()
 style = document.styles['Normal']
 font = style.font
