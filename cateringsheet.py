@@ -157,6 +157,7 @@ def flb(size, quantity, protein, sauces):
 def fried_rice(size, quantity):
 	"""
 	FOR NICO
+	-input is each item on the receipt, so the function would be used for one order of fried rice.
 	-make a list that contains 
 	[number of tins, the size of each tin, number of pairs of utensils, box occupancy, total people]
 	-append it to the list 'info_list'
@@ -166,6 +167,7 @@ def fried_rice(size, quantity):
 def pho(size, quantity, pho_type, pairs_of_utensils):
 	"""
 	FOR NICO
+	-input is each item on the receipt, so the function would be used for one order of pho.
 	-make a list that contains 
 	[number of pho, protein, utensils, box occupancy, total people]
 	-append it to the list 'info_list'
