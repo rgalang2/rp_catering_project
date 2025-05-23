@@ -375,7 +375,7 @@ style = document.styles['Normal']
 font = style.font
 font.name = "Arial"
 font.size = Pt(13)
-d = document.add_paragraph("Guest Name: \nGuest's Phone #: \nDate: \nTime Due: \n")
+d = document.add_paragraph(f'Guest Name: {name} \nGuest\'s Phone #: \nDate: \nTime Due: \n')
 d.add_run("Delivery: \nDelivered by: \nAddress: ")
 document.add_paragraph("Special Instructions: ")
 for items in info_dict:
