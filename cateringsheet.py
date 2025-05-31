@@ -6,7 +6,7 @@ things that needed to be accounted for:
 there ARE multiple sauces for one order (might need to ask delpin)
 update: he dont know but he said he will find out for us
 -calculating large/medium tins
--catering box space for each item
+-catering box space for each items
 -special instructions
 
 notes:
@@ -58,7 +58,7 @@ def magnum_rolls(size, quantity, protein, sauces):
 	box_vol *= quantity
 
 	num_magnum = size_for_one * quantity
-	sauce_oz = total_people * 3
+	sauce_oz = num_magnum * 2
 
 	if sauce_oz <= 24: #if the amount of sauce does not go up to 24, it will just give them one container
 		containers = 1
@@ -84,6 +84,7 @@ def banh_mi(size, quantity, protein, mayo):
 	"""
 	num_banh = 0
 	servings = 0
+	size = size.lower()
 
 
 	if size == "small":
@@ -108,10 +109,12 @@ def banh_mi(size, quantity, protein, mayo):
 
 
 def flb(size, quantity, protein, sauces):
+	size = size.lower()
 	box_vol = 1
 	tin = 0
 	size_tin = ""
 	servings = 0
+
 	if size == "small":
 		servings = 3
 	elif size == "medium":
@@ -124,7 +127,6 @@ def flb(size, quantity, protein, sauces):
 	total_people = quantity * servings
 	sauce_oz = (total_people*3) /24
 
-	#if the amount of sauce does not go up to 24, it will just give them one container
 	if sauce_oz <= 24:
 		containers = 1
 	else:
@@ -278,7 +280,7 @@ for info in info_list:
 		else:
 			prep_sheet["Ramekins"] += info[6]
 		if "Plates" not in prep_sheet.keys():
-			prep_sheet["Plates"] = info[7]
+			prep_sheet["Plates"] = info[7]*2
 			while prep_sheet["Plates"] % 5 != 0:
 				prep_sheet["Plates"] += 1
 		else:
@@ -401,3 +403,4 @@ for sasa in sauce_list:
 	fuck.paragraph_format.space_before = Pt(1)
 	fuck.paragraph_format.space_after = Pt(1)
 document.save(f'{name}.docx')
+print(f'{name}.docx saved!')
