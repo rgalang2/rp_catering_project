@@ -82,6 +82,7 @@ def banh_mi(size, quantity, protein, mayo):
 	"""
 	returns a list of the number of banh mi, the protein, and the mayo
 	"""
+	box_vol = 0
 	num_banh = 0
 	servings = 0
 	size = size.lower()
@@ -89,23 +90,28 @@ def banh_mi(size, quantity, protein, mayo):
 
 	if size == "small":
 		servings = 3
+		box_vol = 12
 	elif size == "medium":
 		servings = 5
+		box_vol = 25
 	elif size == "large":
 		servings = 10
+		box_vol = 55
 	elif size == "x-large":
 		servings = 20
+		box_vol = 110
 
 
 	num_banh = servings * quantity
 	total_people = servings * quantity
+	box_vol *= quantity
 
 	#i want napkins to be a multiple of 10. kinda personal preference because who wants to count exactly 76 napkins
 	napkins = total_people * 3
 	while napkins % 10 != 0:
 		napkins +=1
-
-	info_list.append([f'{num_banh} banh mi', protein, mayo, napkins, total_people])
+	
+	info_list.append([f'{num_banh} banh mi', protein, mayo, napkins, total_people, box_vol])
 
 
 def flb(size, quantity, protein, sauces):
@@ -152,8 +158,8 @@ def flb(size, quantity, protein, sauces):
 		if total_people % 7 >= 2:
 			tin +=1
 	
-	box_vol = 50*tin
-
+	box_vol = 50 * tin * quantity
+	#flb list indexes: [0: number of tins, size tin, protein, # of containers, sauces, napkins, ramekins, total people, box volume]
 	info_list.append([f'{tin} tins', size_tin, protein, containers, sauces, napkins, ramekins, total_people, box_vol])
 
 def fried_rice(size, quantity):
@@ -254,6 +260,10 @@ prep_sheet = {}
 sauce_list = {}
 
 for info in info_list:
+	"""
+	#magnum roll indexes: [0: quantity,  1: protein, 2: # of containers, 
+	3: sauces, 4: napkins, 5: box volume, 6: ramekins, 7: total people]
+	"""
 	if "magnum rolls" in info[0]:
 		if "Magnum Rolls" not in info_dict.keys():
 			info_dict["Magnum Rolls"] = {info[1]:int(info[0].strip(" magnum rolls"))}
@@ -287,7 +297,8 @@ for info in info_list:
 			prep_sheet["Plates"] += info[7]
 			while prep_sheet["Plates"] % 5 != 0:
 				prep_sheet["Plates"] += 1
-	
+
+	#banh mi indexes: [0: quantity, 1: protein, 2: mayo, 3: napkins, 4: total people, 5: box volume]
 	elif "banh mi" in info[0]:
 		if "Banh Mi" not in info_dict.keys():
 			info_dict["Banh Mi"] = {f'{info[1]} w/ {info[2]}':int(info[0].strip(" banh mi"))}
@@ -299,11 +310,20 @@ for info in info_list:
 		if "Napkins" not in prep_sheet.keys():
 			prep_sheet["Napkins"] = info[3]
 		else:
-			prep_sheet["Napkins"] = info[3]
+			prep_sheet["Napkins"] += info[3]
 		if "Plates" not in prep_sheet.keys():
 			prep_sheet["Plates"] = info[4]
 		else:
 			prep_sheet["Plates"] += info[4]
+		if "Catering Boxes" not in prep_sheet.keys():
+			prep_sheet["Catering Boxes"] = info[5]
+		else:
+			prep_sheet["Catering Boxes"] += info[5]
+
+		"""
+		flb list indexes: [0: # of tins, 1: size tin, 2: protein, 
+		3: # of containers, 4:sauces, 5: napkins, 6: ramekins, 7: total people, 8: box volume]
+		"""
 	elif "tins" in info[0]:
 		if "Fully Loaded Bowls" not in info_dict.keys():
 			info_dict["Fully Loaded Bowls"] = {f'{info[2]} in {info[1]}':int(info[0].strip(" tins"))}
