@@ -45,6 +45,17 @@ item_combobox = ttk.Combobox(mainframe, textvariable = food_item, values = menu)
 item_combobox.grid(row = 6, column = 0, sticky = W, pady = 2)
 item_combobox.state(["readonly"])
 
+"""
+FOR KIET/SEB
+-this part is user input. i have no idea how to make a gui so good luck ! 
+ 
+-below, i have it so the user keeps giving items until they type in 'x'
+i mainly used it for test runs, but there is probably a better way for them to input stuff. 
+
+-i kinda started in the code above, but im a noob pls help
+
+lmk if you have questions B)
+"""
 
 # number = input("Guest's phone number: ")
 # date = input("Date due: ")
@@ -57,6 +68,7 @@ item_combobox.state(["readonly"])
 # 	address = input("What is the address?: ")
 # if input("Any special instructions?: ") == "yes":
 # 	special_instructions = input("Special instructions: ")
+
 
 user_input = input("What item?: ")
 while user_input != 'x':
@@ -100,7 +112,12 @@ while user_input != 'x':
 info_dict = {}
 prep_sheet = {}
 sauce_list = {}
+"""
+THIS PART IS REALLY MESSY BUT IT WORKS 
+it loops through info_list and organizes it in a dict (info_dict)
 
+info_dict = {keys are food items: values are a dict of {protein:quantity} }
+"""
 for info in info_list:
 	"""
 	#magnum roll indexes: [0: quantity,  1: protein, 2: # of containers, 
@@ -115,7 +132,7 @@ for info in info_list:
 			else:
 				info_dict["Magnum Rolls"][info[1]] = int(info[0].strip(" magnum rolls"))
 		for s in info[3]:
-			if sauce not in sauce_list.keys():
+			if s not in sauce_list.keys():
 				sauce_list[s] = info[2]
 			else:
 				sauce_list[s] += info[2]
@@ -230,8 +247,6 @@ if prep_sheet["Catering Boxes"] == 0:
 
 print(info_list)
 print(info_dict)
-print(prep_sheet)
-print(sauce_list)
 
 #constructs the word doc
 document = Document()

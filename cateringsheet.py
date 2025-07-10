@@ -191,16 +191,3 @@ def egg_rolls(size, quantity, type_of_ER):
 	-append it to the list 'info_list'
 	"""
 	pass
-
-"""
-FOR KIET
--this part is user input. i have no idea how to make a gui so good luck ! 
- 
--right now, i have it so the user keeps giving items until they type in 'x',
-but there is probably a better way for them to input stuff
-
--i saw you do dropdown menus on your boba website project, that could be
-useful !!! 
-
-lmk if you have questions B)
-"""
