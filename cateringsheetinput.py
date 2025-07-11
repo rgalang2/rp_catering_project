@@ -45,6 +45,61 @@ item_combobox = ttk.Combobox(mainframe, textvariable = food_item, values = menu)
 item_combobox.grid(row = 6, column = 0, sticky = W, pady = 2)
 item_combobox.state(["readonly"])
 
+item_frame = Frame(mainframe)
+item_frame.grid(row=7, column=0, columnspan=2, sticky=(W, E))
+
+size_var = StringVar()
+quantity_var = StringVar()
+protein_var = StringVar()
+sauces_var = StringVar()
+mayo_var = StringVar()
+
+def clear_inputs():
+	for widget in item_frame.winfo_children():
+		widget.destroy()
+		
+def add_item_to_list():
+	selection = food_item.get()
+	qty = int(quantity_var.get())
+	sz = size_var.get()
+	protein = protein_var.get()
+	
+	if selection == "Magnum Rolls":
+		sauces = [s.strip() for s in sauces_var.get().split(",") if s.strip()]
+		magnum_rolls(sz, qty, protein, sauces)
+
+	elif selection == "Banh Mi":
+		mayo = mayo_var.get()
+		banh_mi(sz, qty, protein, mayo)
+
+	elif selection == "Fully Loaded Bowl":
+		sauces = [s.strip() for s in sauces_var.get().split(",") if s.strip()]
+		flb(sz, qty, protein, sauces)
+
+	clear_inputs()
+
+def item_selected(event):
+	clear_inputs()
+	Label(item_frame, text="Size:").grid(row=0, column=0, sticky=W)
+	Entry(item_frame, textvariable=size_var).grid(row=0, column=1)
+	Label(item_frame, text="Quantity:").grid(row=1, column=0, sticky=W)
+	Entry(item_frame, textvariable=quantity_var).grid(row=1, column=1)
+	Label(item_frame, text="Protein:").grid(row=2, column=0, sticky=W)
+	Entry(item_frame, textvariable=protein_var).grid(row=2, column=1)
+
+	if food_item.get() == "Magnum Rolls":
+		Label(item_frame, text="Sauces (comma separated):").grid(row=3, column=0, sticky=W)
+		Entry(item_frame, textvariable=sauces_var).grid(row=3, column=1)
+	elif food_item.get() == "Banh Mi":
+		Label(item_frame, text="Mayo Type:").grid(row=3, column=0, sticky=W)
+		Entry(item_frame, textvariable=mayo_var).grid(row=3, column=1)
+	elif food_item.get() == "Fully Loaded Bowl":
+		Label(item_frame, text="Sauces (comma separated):").grid(row=3, column=0, sticky=W)
+		Entry(item_frame, textvariable=sauces_var).grid(row=3, column=1)
+
+	Button(item_frame, text="Add Item", command=add_item_to_list).grid(row=5, column=0, columnspan=2, pady=10)
+
+item_combobox.bind("<<ComboboxSelected>>", item_selected)
 """
 FOR KIET/SEB
 -this part is user input. i have no idea how to make a gui so good luck ! 
